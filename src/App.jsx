@@ -1,11 +1,15 @@
 import React from 'react';
 import Game from './Game';
-import "./App.css"
+import './App.css';
 
 function App() {
   return (
     <div className="App">
-      <Game />
+      <div className="arcade-container">
+        <div className="arcade-screen">
+          <Game />
+        </div>
+      </div>
     </div>
   );
 }

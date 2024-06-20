@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ReactP5Wrapper } from 'react-p5-wrapper';
 
 const Game = () => {
+  const [playerScore, setPlayerScore] = useState(0);
+  const [botScore, setBotScore] = useState(0);
+
   const sketch = (p) => {
     let playerY;
     let botY;
@@ -28,6 +31,13 @@ const Game = () => {
     p.draw = () => {
       p.background(0);
 
+      // Display scores
+      p.fill(255);
+      p.textSize(32);
+      p.textAlign(p.CENTER, p.CENTER);
+      p.text(playerScore, p.width / 4, 50);
+      p.text(botScore, (p.width / 4) * 3, 50);
+
       // Player paddle
       p.rect(0, playerY, paddleWidth, paddleHeight);
 
@@ -47,23 +57,32 @@ const Game = () => {
       }
 
       // Ball collision with player paddle
-      if (ballX - ballSize / 2 <= paddleWidth && ballY >= playerY && ballY <= playerY + paddleHeight) {
+      if (
+        ballX - ballSize / 2 <= paddleWidth &&
+        ballY >= playerY &&
+        ballY <= playerY + paddleHeight
+      ) {
         ballSpeedX *= -1;
         ballSpeedY = p.random(2, 3) * (p.random() > 0.5 ? 1 : -1);
       }
 
       // Ball collision with bot paddle
-      if (ballX + ballSize / 2 >= p.width - paddleWidth && ballY >= botY && ballY <= botY + paddleHeight) {
+      if (
+        ballX + ballSize / 2 >= p.width - paddleWidth &&
+        ballY >= botY &&
+        ballY <= botY + paddleHeight
+      ) {
         ballSpeedX *= -1;
         ballSpeedY = p.random(2, 3) * (p.random() > 0.5 ? 1 : -1);
       }
 
-      // Reset ball if it goes out of bounds
-      if (ballX <= 0 || ballX >= p.width) {
-        ballX = p.width / 2;
-        ballY = p.height / 2;
-        ballSpeedX = p.random(2, 3) * (p.random() > 0.5 ? 1 : -1);
-        ballSpeedY = p.random(2, 3) * (p.random() > 0.5 ? 1 : -1);
+      // Reset ball if it goes out of bounds and update scores
+      if (ballX <= 0) {
+        setBotScore((prev) => prev + 1);
+        resetBall();
+      } else if (ballX >= p.width) {
+        setPlayerScore((prev) => prev + 1);
+        resetBall();
       }
 
       // Simple bot AI
@@ -71,6 +90,13 @@ const Game = () => {
 
       // Player paddle control
       playerY = p.constrain(p.mouseY - paddleHeight / 2, 0, p.height - paddleHeight);
+    };
+
+    const resetBall = () => {
+      ballX = p.width / 2;
+      ballY = p.height / 2;
+      ballSpeedX = p.random(2, 3) * (p.random() > 0.5 ? 1 : -1);
+      ballSpeedY = p.random(2, 3) * (p.random() > 0.5 ? 1 : -1);
     };
   };
 
